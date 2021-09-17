@@ -1,4 +1,4 @@
-package com.example.hqproj;
+package com.example.hqproj.Activity;
 
 import android.content.Intent;
 import android.database.SQLException;
@@ -9,6 +9,9 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.example.hqproj.DB.MySQLiteOpenHelper;
+import com.example.hqproj.R;
 
 public class RegActivity extends AppCompatActivity {
 

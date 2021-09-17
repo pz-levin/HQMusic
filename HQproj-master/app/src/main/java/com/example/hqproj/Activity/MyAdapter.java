@@ -1,6 +1,5 @@
-package com.example.hqproj;
+package com.example.hqproj.Activity;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
@@ -12,11 +11,10 @@ import android.widget.Toast;
 
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.hqproj.beans.Datas;
+import com.example.hqproj.R;
 import com.example.hqproj.beans.MusicBean;
 
 import java.util.List;
-import java.util.concurrent.BlockingDeque;
 
 public class MyAdapter extends RecyclerView.Adapter<MyAdapter.InnerHolder> {
 
@@ -60,7 +58,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.InnerHolder> {
                 Log.d("xxxxxxxxx", "position --->" +position + "");
                 mPosition = position;
                 Log.d("xxxxxxxxx", "mPosition --->"+ mPosition + "");
-                Intent intent = new Intent(mContext,MusicActivity.class);
+                Intent intent = new Intent(mContext, MusicActivity.class);
                 mContext.startActivity(intent);
             }
         });

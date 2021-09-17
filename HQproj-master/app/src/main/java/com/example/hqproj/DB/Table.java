@@ -1,4 +1,4 @@
-package com.example.hqproj;
+package com.example.hqproj.DB;
 
 public class Table {
     public static final String CREATE_USER = "create table User_info(" +

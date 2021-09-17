@@ -9,19 +9,20 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.HQproj">
+        <activity android:name=".Activity.ShowActivity"></activity>
         <activity
-            android:name=".RecyclerViewActivity"
+            android:name=".Activity.RecyclerViewActivity"
             android:exported="true" />
 
         <service
-            android:name=".MusicService"
+            android:name=".Service.MusicService"
             android:enabled="true"
-            android:exported="true"></service>
+            android:exported="true" />
 
-        <activity android:name=".MusicActivity" />
-        <activity android:name=".RegActivity" />
-        <activity android:name=".LoginActivity" />
-        <activity android:name=".MainActivity">
+        <activity android:name=".Activity.MusicActivity" />
+        <activity android:name=".Activity.RegActivity" />
+        <activity android:name=".Activity.LoginActivity" />
+        <activity android:name=".Activity.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

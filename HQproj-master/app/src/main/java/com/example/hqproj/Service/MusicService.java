@@ -1,12 +1,12 @@
-package com.example.hqproj;
+package com.example.hqproj.Service;
 
 import android.app.Service;
 import android.content.Intent;
 import android.media.MediaPlayer;
 import android.os.IBinder;
 
+import com.example.hqproj.Activity.MyAdapter;
 import com.example.hqproj.beans.Datas;
-
 
 public class MusicService extends Service {
 
@@ -25,10 +25,8 @@ public class MusicService extends Service {
         } else if ("stop".equals(action)) {
             stopMusic();
         }
-
         return super.onStartCommand(intent, flags, startId);
     }
-
 
     private MediaPlayer player;
 

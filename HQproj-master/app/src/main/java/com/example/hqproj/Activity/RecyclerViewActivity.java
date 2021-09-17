@@ -1,4 +1,4 @@
-package com.example.hqproj;
+package com.example.hqproj.Activity;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -6,6 +6,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
 
+import com.example.hqproj.R;
 import com.example.hqproj.beans.Datas;
 import com.example.hqproj.beans.MusicBean;
 

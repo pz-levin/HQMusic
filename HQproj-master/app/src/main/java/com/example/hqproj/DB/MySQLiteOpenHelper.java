@@ -1,9 +1,9 @@
-package com.example.hqproj;
+package com.example.hqproj.DB;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import static com.example.hqproj.Table.CREATE_USER;
+import static com.example.hqproj.DB.Table.CREATE_USER;
 
 public class MySQLiteOpenHelper extends SQLiteOpenHelper {
     private Context mContext;
