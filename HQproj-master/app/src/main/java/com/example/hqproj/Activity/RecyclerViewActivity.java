@@ -1,3 +1,4 @@
+
 package com.example.hqproj.Activity;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -22,7 +23,6 @@ public class RecyclerViewActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recycler_view);
-
         mRc_view = (RecyclerView) findViewById(R.id.recycler_view);
         //准备数据
         initData();
@@ -52,4 +52,28 @@ public class RecyclerViewActivity extends AppCompatActivity {
         //设置到RecyclerView里面
         mRc_view.setAdapter(adapter);
     }
+
+//    //创建菜单
+//    public boolean onCreateOptionsMenu(Menu menu){
+//        getMenuInflater().inflate(R.menu.main,menu);
+//        return true;
+//    }
+//    public boolean onOptionsItemSelected(MenuItem item){
+//        switch(item.getItemId()){
+//            case R.id.change_skin:
+//                break;
+//            case R.id.s_one:
+//
+//                break;
+//            case R.id.s_two:
+//
+//                break;
+//            case R.id.s_three:
+//
+//                break;
+//            default:
+//        }
+//        return true;
+//    }
 }
+

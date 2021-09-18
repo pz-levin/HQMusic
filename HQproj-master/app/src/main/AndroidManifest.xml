@@ -9,23 +9,32 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.HQproj">
-        <activity android:name=".Activity.ShowActivity"></activity>
+
         <activity
             android:name=".Activity.RecyclerViewActivity"
+            android:launchMode="singleTask"
             android:exported="true" />
 
         <service
             android:name=".Service.MusicService"
             android:enabled="true"
-            android:exported="true" />
+            android:exported="true">
+        </service>
 
-        <activity android:name=".Activity.MusicActivity" />
-        <activity android:name=".Activity.RegActivity" />
-        <activity android:name=".Activity.LoginActivity" />
+        <activity android:name=".Activity.MusicActivity">
+        </activity>
+
+        <activity android:name=".Activity.RegActivity"
+            android:launchMode="singleTask">
+        </activity>
+
+        <activity android:name=".Activity.LoginActivity"
+            android:launchMode="singleTask">
+        </activity>
+
         <activity android:name=".Activity.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
