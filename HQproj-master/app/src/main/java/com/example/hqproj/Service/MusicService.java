@@ -9,12 +9,12 @@ import android.widget.Toast;
 
 import com.example.hqproj.Activity.MusicActivity;
 import com.example.hqproj.Activity.MyAdapter;
+import com.example.hqproj.R;
 import com.example.hqproj.beans.Datas;
-
 
 public class MusicService extends Service {
 
-    private MediaPlayer player;
+    private  MediaPlayer player;
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -34,6 +34,8 @@ public class MusicService extends Service {
             nextMusic();
         } else if ("minus".equals(action)) {
             previousMusic();
+        } else if ("loop".equals(action)) {
+            loopMusic();
         }
         return super.onStartCommand(intent, flags, startId);
     }
@@ -42,23 +44,30 @@ public class MusicService extends Service {
     private void playMusic(int resId) {
         if (player == null) {
             player = MediaPlayer.create(this, resId);
-            //如果该歌曲正在播放时想播放其他歌
-        }else if(player.isPlaying()){
-            stopMusic();
-            playMusic(resId);
+            Log.d("sssssssss", "playing......."+MyAdapter.mPosition);
+
+//        }else if(player.isPlaying()){
+//            stopMusic();
+//            Log.d("sssssssss", "重新播放"+MyAdapter.mPosition);
+//            playMusic(resId);
+//        }else{
         }
         player.start();
-//        else{
-//            stopMusic();
-//            playMusic(resId);
-//        }
-
+        //播放结束自动播放下一首
+        player.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mp) {
+//                player.start();
+                nextMusic();
+            }
+        });
     }
 
     //暂停
     private void pauseMusic() {
         if (player != null && player.isPlaying()) {
             player.pause();
+            Log.d("sssssssss", "pause......."+MyAdapter.mPosition);
         }
     }
 
@@ -70,6 +79,7 @@ public class MusicService extends Service {
             player.release();
             player = null;
         }
+        Log.d("sssssssss", "stop.......");
     }
 
     //下一首
@@ -97,6 +107,7 @@ public class MusicService extends Service {
             changeSinger(Datas.singers[0]);
             changeSongName(Datas.songs[0]);
         }
+        Log.d("sssssssss", "next.......");
     }
 
     //上一首
@@ -121,8 +132,17 @@ public class MusicService extends Service {
             changeSinger(Datas.singers[Datas.singers.length - 1]);
             changeSongName(Datas.songs[Datas.songs.length - 1]);
         }
+        Log.d("sssssssss", "previous.......");
     }
 
+    //单曲循环
+    private void loopMusic() {
+        if(player != null && player.isPlaying()){
+            player.setLooping(true);
+            Toast.makeText(this, "单曲循环", Toast.LENGTH_SHORT).show();
+            MusicActivity.mBtn_loop.setImageResource(R.drawable.ic_loop);
+        }
+    }
 
     //退出
     private void exitMusic() {
@@ -212,6 +232,24 @@ public class MusicService extends Service {
                 changeSongName(Datas.songs[9]);
                 changeSinger(Datas.singers[9]);
                 playMusic(Datas.song[9]);
+                break;
+            case 10:
+                changeImg(Datas.imgs[10]);
+                changeSongName(Datas.songs[10]);
+                changeSinger(Datas.singers[10]);
+                playMusic(Datas.song[10]);
+                break;
+            case 11:
+                changeImg(Datas.imgs[11]);
+                changeSongName(Datas.songs[11]);
+                changeSinger(Datas.singers[11]);
+                playMusic(Datas.song[11]);
+                break;
+            case 12:
+                changeImg(Datas.imgs[12]);
+                changeSongName(Datas.songs[12]);
+                changeSinger(Datas.singers[12]);
+                playMusic(Datas.song[12]);
                 break;
             default:
                 Toast.makeText(this, "当前无歌曲！", Toast.LENGTH_SHORT).show();

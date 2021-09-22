@@ -8,6 +8,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+
 import com.example.hqproj.R;
 import com.example.hqproj.Service.MusicService;
 
@@ -16,6 +17,7 @@ public class MusicActivity extends AppCompatActivity implements View.OnClickList
     public static ImageView mSinger_image;
     public static TextView mSong;
     public static TextView mSinger;
+    public static ImageButton mBtn_loop;
 
     private ImageButton btn_play;
     private ImageButton btn_pause;
@@ -23,6 +25,7 @@ public class MusicActivity extends AppCompatActivity implements View.OnClickList
     private ImageButton btn_plus;
     private ImageButton btn_minus;
     private ImageView singer_image;
+    private ImageButton btn_loop;
     private TextView song;
     private TextView singer;
 
@@ -31,27 +34,30 @@ public class MusicActivity extends AppCompatActivity implements View.OnClickList
         super.onCreate(savedInstanceState);
         setContentView(R.layout.music_page);
 
-        btn_play =  findViewById(R.id.btn_play);
+        btn_play = findViewById(R.id.btn_play);
         btn_pause = findViewById(R.id.btn_pause);
         btn_stop = findViewById(R.id.btn_stop);
         btn_plus = findViewById(R.id.btn_plus);
         btn_minus = findViewById(R.id.btn_minus);
+        btn_loop = findViewById(R.id.btn_loop);
         singer_image = findViewById(R.id.singer_image);
         song = findViewById(R.id.song);
         singer = findViewById(R.id.singer);
         mSinger_image = singer_image;
         mSong = song;
         mSinger = singer;
+        mBtn_loop = btn_loop;
 
         btn_play.setOnClickListener(this);
         btn_pause.setOnClickListener(this);
         btn_stop.setOnClickListener(this);
         btn_plus.setOnClickListener(this);
         btn_minus.setOnClickListener(this);
+        btn_loop.setOnClickListener(this);
 
         //点击某个item就播放
         Intent intent = new Intent(this, MusicService.class);
-        intent.putExtra("action","play");
+        intent.putExtra("action", "play");
         startService(intent);
     }
 
@@ -83,11 +89,12 @@ public class MusicActivity extends AppCompatActivity implements View.OnClickList
                 intent.putExtra("action", "minus");
                 startService(intent);
                 break;
-
+            case R.id.btn_loop:
+                intent.putExtra("action", "loop");
+                startService(intent);
+                break;
         }
     }
-
-
 }
 
 

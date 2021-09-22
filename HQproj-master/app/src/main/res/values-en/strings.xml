@@ -1,0 +1,20 @@
+<resources>
+    <string name="app_name">HQproj</string>
+    <string name="lan_chinese">我会中文</string>
+    <string name="lan_en">English</string>
+    <string name="PageLogin_content">Welcome</string>
+    <string name="PageLogin_userName">userName</string>
+    <string name="PageLogin_userPwd">password</string>
+    <string name="PageLogin_login">Login</string>
+    <string name="PageLogin_register">Register</string>
+    <string name="PageLogin_forget">Forget password?</string>
+    <string name="PageLogin_type">Type here!</string>
+    <string name="PageLogin_choose_lan">choose language</string>
+
+    <string name="PageRes_content">Register</string>
+    <string name="PageRes_userName">userName</string>
+    <string name="PageRes_userPwd">password</string>
+    <string name="PageRes_userConfirmPwd">ConfirmPassword</string>
+    <string name="PageRes_register">Register</string>
+</resources>
+

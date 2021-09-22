@@ -14,7 +14,10 @@ public class Datas {
             R.drawable.pic_07,
             R.drawable.pic_08,
             R.drawable.pic_09,
-            R.drawable.pic_10
+            R.drawable.pic_10,
+            R.drawable.pic_01,
+            R.drawable.pic_11,
+            R.drawable.pic_12
     };
 
     //歌名
@@ -28,7 +31,10 @@ public class Datas {
             "PING PONG",
             "大风吹",
             "Ring Ring Ring",
-            "Tell me"
+            "Tell me",
+            "Mojito",
+            "不如",
+            "善变"
     };
 
     //歌手
@@ -42,7 +48,10 @@ public class Datas {
             "HyunA&DAWN",
             "刘惜君",
             "S.H.E",
-            "金润吉"
+            "金润吉",
+            "周杰伦",
+            "秦海清",
+            "王靖雯不胖"
     };
 
     //歌曲资源
@@ -56,6 +65,9 @@ public class Datas {
             R.raw.ping_pong,
             R.raw.da_feng_chui,
             R.raw.ring_ring_ring,
-            R.raw.tell_me
+            R.raw.tell_me,
+            R.raw.mojito,
+            R.raw.bu_ru,
+            R.raw.shan_bian
     };
 }
