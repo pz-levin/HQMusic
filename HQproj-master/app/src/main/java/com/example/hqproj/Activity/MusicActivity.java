@@ -1,6 +1,7 @@
 package com.example.hqproj.Activity;
 
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageButton;
@@ -10,19 +11,20 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.hqproj.MyBroadcast;
 import com.example.hqproj.R;
 import com.example.hqproj.Service.MusicService;
 
-import java.io.Serializable;
-import java.util.Timer;
+public class MusicActivity extends AppCompatActivity implements View.OnClickListener{
 
-public class MusicActivity extends AppCompatActivity implements View.OnClickListener {
+    public static final String PLAY = "UPDATE_BUTTON_PLAY";
+    public static final String PAUSE = "UPDATE_BUTTON_PAUSE";
+    public static final String LOOP_LIST = "UPDATE_BUTTON_LOOP_LIST";
+    public static final String LOOP_SINGLE = "UPDATE_BUTTON_LOOP_SINGLE";
 
     public static ImageView mSinger_image;
     public static TextView mSong;
     public static TextView mSinger;
-    public static ImageButton mBtn_loop;
-    public static ImageButton mBtn_pause;
     public static SeekBar mSeekBar;
     public static TextView mCurrentTv;
     public static TextView mTotalTv;
@@ -37,6 +39,9 @@ public class MusicActivity extends AppCompatActivity implements View.OnClickList
     private SeekBar seekBar;
     private TextView currentTv;
     private TextView totalTv;
+    Intent intent;
+    private IntentFilter intentFilter;
+    private MyBroadcast b1,b2,b3,b4;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,11 +50,49 @@ public class MusicActivity extends AppCompatActivity implements View.OnClickList
         //初始化
         initData();
         initListener();
-
+        //注册广播
+        regBroadcast();
+        //更新UI
+        updateUI();
         //点击某个item就播放
-        Intent intent = new Intent(this, MusicService.class);
+        intent = new Intent(this, MusicService.class);
         intent.putExtra("action", "play");
         startService(intent);
+    }
+
+    /**
+     * 更新UI
+     */
+    private void updateUI() {
+        b1.setOnUpdateUI(i -> btn_pause.setImageResource(R.drawable.ic_play));
+        b2.setOnUpdateUI(i -> btn_pause.setImageResource(R.drawable.ic_pause));
+        b3.setOnUpdateUI(i -> btn_loop.setImageResource(R.drawable.ic_loop_list));
+        b4.setOnUpdateUI(i -> btn_loop.setImageResource(R.drawable.ic_loop));
+    }
+
+    /**
+     * 注册广播
+     */
+    private void regBroadcast() {
+        b1 = new MyBroadcast();
+        intentFilter = new IntentFilter();
+        intentFilter.addAction(PLAY);
+        registerReceiver(b1, intentFilter);
+
+        b2 = new MyBroadcast();
+        intentFilter = new IntentFilter();
+        intentFilter.addAction(PAUSE);
+        registerReceiver(b2, intentFilter);
+
+        b3 = new MyBroadcast();
+        intentFilter = new IntentFilter();
+        intentFilter.addAction(LOOP_LIST);
+        registerReceiver(b3, intentFilter);
+
+        b4 = new MyBroadcast();
+        intentFilter = new IntentFilter();
+        intentFilter.addAction(LOOP_SINGLE);
+        registerReceiver(b4, intentFilter);
     }
 
     private void initData() {
@@ -67,8 +110,6 @@ public class MusicActivity extends AppCompatActivity implements View.OnClickList
         mSinger_image = singer_image;
         mSong = song;
         mSinger = singer;
-        mBtn_loop = btn_loop;
-        mBtn_pause = btn_pause;
         mSeekBar = seekBar;
         mCurrentTv = currentTv;
         mTotalTv = totalTv;
@@ -104,5 +145,14 @@ public class MusicActivity extends AppCompatActivity implements View.OnClickList
                 startService(intent);
                 break;
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        unregisterReceiver(b1);
+        unregisterReceiver(b2);
+        unregisterReceiver(b3);
+        unregisterReceiver(b4);
     }
 }

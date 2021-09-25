@@ -55,9 +55,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.InnerHolder> {
             @Override
             public void onClick(View view) {
                 int position = holder.getAdapterPosition();
-                Log.d("xxxxxxxxx", "position --->" +position + "");
                 mPosition = position;
-                Log.d("xxxxxxxxx", "mPosition --->"+ mPosition + "");
                 Intent intent = new Intent(mContext, MusicActivity.class);
                 mContext.startActivity(intent);
             }

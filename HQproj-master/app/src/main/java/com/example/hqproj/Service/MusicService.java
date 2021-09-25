@@ -1,5 +1,6 @@
 package com.example.hqproj.Service;
 
+import android.annotation.SuppressLint;
 import android.app.Service;
 import android.content.Intent;
 import android.media.MediaPlayer;
@@ -8,22 +9,26 @@ import android.util.Log;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.example.hqproj.Activity.MusicActivity;
 import com.example.hqproj.Activity.MyAdapter;
 import com.example.hqproj.Activity.RecyclerViewActivity;
-import com.example.hqproj.R;
 import com.example.hqproj.beans.Datas;
 
 import java.text.SimpleDateFormat;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import static com.example.hqproj.Activity.MusicActivity.LOOP_LIST;
+import static com.example.hqproj.Activity.MusicActivity.LOOP_SINGLE;
+import static com.example.hqproj.Activity.MusicActivity.PAUSE;
+import static com.example.hqproj.Activity.MusicActivity.PLAY;
 import static com.example.hqproj.Activity.MusicActivity.mCurrentTv;
 import static com.example.hqproj.Activity.MusicActivity.mSeekBar;
 import static com.example.hqproj.Activity.MusicActivity.mTotalTv;
+import static com.example.hqproj.Activity.RecyclerViewActivity.PAUSE1;
+import static com.example.hqproj.Activity.RecyclerViewActivity.PLAY1;
 
-public class MusicService extends Service implements SeekBar.OnSeekBarChangeListener, MediaPlayer.OnPreparedListener {
+public class MusicService extends Service implements SeekBar.OnSeekBarChangeListener {
 
     private MediaPlayer player;
     private boolean isSeekBarChanging;
@@ -39,9 +44,6 @@ public class MusicService extends Service implements SeekBar.OnSeekBarChangeList
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         String action = intent.getStringExtra("action");
-//        intent.getSerializableExtra("song");
-//        this.song = song;
-
         if ("play".equals(action)) {
             selectMusic();
         } else if ("pause".equals(action)) {
@@ -58,36 +60,35 @@ public class MusicService extends Service implements SeekBar.OnSeekBarChangeList
     }
 
     //播放
+    Intent i = new Intent();
+    Intent i2 = new Intent();
     private void playMusic(int resId) {
         if (player != null) {
             stopMusic();
         }
         player = MediaPlayer.create(this, resId);
         player.start();
-//        currentPos = player.getCurrentPosition();
-//        player.setOnPreparedListener(this);
-//        timer = new Timer();
-//        timer.schedule(new TimerTask() {
-//            @Override
-//            public void run() {
-//                if(isSeekBarChanging){
-//                    return;
-//                }
-//                mSeekBar.setProgress(player.getCurrentPosition());
-//            }
-//        },0,50);
-        MusicActivity.mBtn_pause.setImageResource(R.drawable.ic_play);
-        RecyclerViewActivity.mSongButton.setImageResource(R.drawable.ic_play1);
-
+        player.setOnPreparedListener(mp -> {
+            mSeekBar.setMax(player.getDuration());
+        });
+        currentPos = player.getCurrentPosition();
+        timer = new Timer();
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                if(!isSeekBarChanging){
+                    mSeekBar.setProgress(currentPos);
+                }
+            }
+        },0,50);
         mSeekBar.setOnSeekBarChangeListener(this);
+        i.setAction(PLAY);//发送广播更新UI，播放状态
+        i2.setAction(PLAY1);
+        sendBroadcast(i);
+        sendBroadcast(i2);
 
         //播放结束自动播放下一首
-        player.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-            @Override
-            public void onCompletion(MediaPlayer mp) {
-                nextMusic();
-            }
-        });
+        player.setOnCompletionListener(mp -> nextMusic());
     }
 
     //暂停
@@ -95,15 +96,16 @@ public class MusicService extends Service implements SeekBar.OnSeekBarChangeList
         if (player != null) {
             if (player.isPlaying()) {
                 player.pause();
-                Log.d("dddddddddd", "pause--->" + player.toString());
-                MusicActivity.mBtn_pause.setImageResource(R.drawable.ic_pause);
-                RecyclerViewActivity.mSongButton.setImageResource(R.drawable.ic_pause1);
+                i.setAction(PAUSE);//发送广播更新UI，暂停状态
+                i2.setAction(PAUSE1);
             } else {
                 player.start();
-                MusicActivity.mBtn_pause.setImageResource(R.drawable.ic_play);
-                RecyclerViewActivity.mSongButton.setImageResource(R.drawable.ic_play1);
+                i.setAction(PLAY);//发送广播更新UI，播放状态
+                i2.setAction(PLAY1);
             }
         }
+        sendBroadcast(i);
+        sendBroadcast(i2);
     }
 
     //停止
@@ -118,7 +120,7 @@ public class MusicService extends Service implements SeekBar.OnSeekBarChangeList
 
     //下一首
     private void nextMusic() {
-        MusicActivity.mBtn_loop.setImageResource(R.drawable.ic_loop_list);
+        i.setAction(LOOP_LIST);//发送广播更新UI，列表循环
         //获取当前播放的是哪个item
         int currentResId = MyAdapter.mPosition + 1;
         if (currentResId >= 0 && currentResId < Datas.song.length) {
@@ -139,11 +141,12 @@ public class MusicService extends Service implements SeekBar.OnSeekBarChangeList
             changeSinger(Datas.singers[0]);
             changeSongName(Datas.songs[0]);
         }
+        sendBroadcast(i);
     }
 
     //上一首
     private void previousMusic() {
-        MusicActivity.mBtn_loop.setImageResource(R.drawable.ic_loop_list);
+        i.setAction(LOOP_LIST);//发送广播更新UI，列表循环
         //获取当前播放的是哪个item
         int currentResId = MyAdapter.mPosition;
         if (currentResId > 0) {
@@ -165,11 +168,12 @@ public class MusicService extends Service implements SeekBar.OnSeekBarChangeList
             changeSongName(Datas.songs[Datas.songs.length - 1]);
         }
         Log.d("sssssssss", "previous.......");
+        sendBroadcast(i);
     }
 
     //循环
     private void loopMusic() {
-        MusicActivity.mBtn_loop.setImageResource(R.drawable.ic_loop_list);
+        i.setAction(LOOP_LIST);//发送广播更新UI，循环播放
         if (player != null) {
             //列表循环
             if (player.isLooping()) {
@@ -179,9 +183,10 @@ public class MusicService extends Service implements SeekBar.OnSeekBarChangeList
                 //单曲循环
                 player.setLooping(true);
                 Toast.makeText(this, "单曲循环", Toast.LENGTH_SHORT).show();
-                MusicActivity.mBtn_loop.setImageResource(R.drawable.ic_loop);
+                i.setAction(LOOP_SINGLE);//发送广播更新UI，单曲循环
             }
         }
+        sendBroadcast(i);
     }
 
     //退出
@@ -192,9 +197,19 @@ public class MusicService extends Service implements SeekBar.OnSeekBarChangeList
     @Override
     public void onDestroy() {
         super.onDestroy();
-        stopMusic();
-        timer.cancel();
-        timer = null;
+        isSeekBarChanging = true;
+//        stopMusic();
+//        timer.cancel();
+//        timer = null;
+        if(player != null){
+            player.stop();
+            player.release();
+            player = null;
+        }
+        if(timer != null){
+            timer.cancel();
+            timer = null;
+        }
     }
 
     //更换图片
@@ -238,12 +253,16 @@ public class MusicService extends Service implements SeekBar.OnSeekBarChangeList
                 break;
             default:
                 Toast.makeText(this, "当前无歌曲！", Toast.LENGTH_SHORT).show();
+
                 break;
+
         }
     }
 
+    @SuppressLint("SetTextI18n")
     @Override
     public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+        @SuppressLint("SimpleDateFormat")
         SimpleDateFormat sdf=new SimpleDateFormat("mm:ss");
         String musicTotalTime=sdf.format(player.getDuration());
         String musicCurrentTime = sdf.format(player.getCurrentPosition());
@@ -260,11 +279,5 @@ public class MusicService extends Service implements SeekBar.OnSeekBarChangeList
     public void onStopTrackingTouch(SeekBar seekBar) {
         isSeekBarChanging = false;
         player.seekTo(seekBar.getProgress());
-    }
-
-    @Override
-    public void onPrepared(MediaPlayer mp) {
-        player.seekTo(currentPos);
-        mSeekBar.setMax(player.getDuration());
     }
 }

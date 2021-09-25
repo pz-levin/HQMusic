@@ -5,14 +5,13 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
-import android.media.Image;
+import android.content.IntentFilter;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import com.example.hqproj.MyBroadcast;
 import com.example.hqproj.R;
 import com.example.hqproj.Service.MusicService;
 import com.example.hqproj.beans.Datas;
@@ -22,6 +21,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class RecyclerViewActivity extends AppCompatActivity{
+
+    public static final String PLAY1 = "UPDATE_BUTTON_PLAY1";
+    public static final String PAUSE1 = "UPDATE_BUTTON_PAUSE1";
 
     public static TextView mSongTv;
     public static TextView mSingerTv;
@@ -34,14 +36,42 @@ public class RecyclerViewActivity extends AppCompatActivity{
     private TextView singerTv;
     private ImageButton songButton;
     private ImageView singerImg;
+    private MyBroadcast b1,b2;
+    private IntentFilter intentFilter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recycler_view);
-
         //准备数据
         initData();
+        //注册广播
+        regBroadcast();
+        //更新UI
+        updateUI();
+    }
+
+    /**
+     * 更新UI
+     */
+    private void updateUI() {
+        b1.setOnUpdateUI(i -> songButton.setImageResource(R.drawable.ic_play1));
+        b2.setOnUpdateUI(i -> songButton.setImageResource(R.drawable.ic_pause1));
+    }
+
+    /**
+     * 注册广播
+     */
+    private void regBroadcast() {
+        b1 = new MyBroadcast();
+        intentFilter = new IntentFilter();
+        intentFilter.addAction(PLAY1);
+        registerReceiver(b1, intentFilter);
+
+        b2 = new MyBroadcast();
+        intentFilter = new IntentFilter();
+        intentFilter.addAction(PAUSE1);
+        registerReceiver(b2, intentFilter);
     }
 
     private void initData() {
@@ -56,13 +86,10 @@ public class RecyclerViewActivity extends AppCompatActivity{
         mSongButton = songButton;
         mSingerImg = singerImg;
 
-        songButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(RecyclerViewActivity.this, MusicService.class);
-                intent.putExtra("action", "pause");
-                startService(intent);
-            }
+        songButton.setOnClickListener(v -> {
+            Intent intent = new Intent(RecyclerViewActivity.this, MusicService.class);
+            intent.putExtra("action", "pause");
+            startService(intent);
         });
 
         //创建数据集合
@@ -86,5 +113,12 @@ public class RecyclerViewActivity extends AppCompatActivity{
         MyAdapter adapter = new MyAdapter(mList);
         //设置到RecyclerView里面
         mRc_view.setAdapter(adapter);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        unregisterReceiver(b1);
+        unregisterReceiver(b2);
     }
 }
