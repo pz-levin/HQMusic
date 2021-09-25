@@ -5,6 +5,8 @@ import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -13,8 +15,11 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.hqproj.DB.MySQLiteOpenHelper;
 import com.example.hqproj.R;
+import com.example.hqproj.utils.LocaleUtils;
 
 public class LoginActivity extends AppCompatActivity {
+
+    final static int REQUEST_REGISTER_ACTION = 1;
 
     private MySQLiteOpenHelper helper;
     private Button btn_login;
@@ -58,7 +63,6 @@ public class LoginActivity extends AppCompatActivity {
                     str2 = cur.getString(cur.getColumnIndex("user_password")) ;
                     if (userName.equals(str1) && userPwd.equals(str2)) {
                         Intent intent =new Intent(LoginActivity.this,RecyclerViewActivity.class);
-//                        Log.d("xxxxxxxxxxxxxxx", "11111111111111 ");
                         Toast.makeText(this, "登陆成功！", Toast.LENGTH_SHORT).show();
                         startActivity(intent);
                         return;
@@ -76,7 +80,7 @@ public class LoginActivity extends AppCompatActivity {
         //注册按钮监听事件
         btn_register.setOnClickListener(v -> {
             Intent intent =new Intent(LoginActivity.this,RegActivity.class);
-            startActivityForResult(intent,1);
+            startActivityForResult(intent,REQUEST_REGISTER_ACTION);
         });
     }
 
@@ -84,7 +88,7 @@ public class LoginActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode){
-            case 1:
+            case REQUEST_REGISTER_ACTION:
                 if(resultCode == RESULT_OK){
                     String name = data.getStringExtra("reg_userName");
                     String pwd = data.getStringExtra("reg_userPwd");
@@ -92,6 +96,43 @@ public class LoginActivity extends AppCompatActivity {
                     SQLiteDatabase db = helper.getWritableDatabase();
                     db.execSQL("insert into User_info (user_name,user_password) values(?,?)",new String[]{name,pwd});
                 }
+                break;
+            default:
+                break;
         }
+    }
+
+    //创建菜单,用于切换语言
+    public boolean onCreateOptionsMenu(Menu menu){
+        getMenuInflater().inflate(R.menu.language,menu);
+        return true;
+    }
+    public boolean onOptionsItemSelected(MenuItem item){
+        switch(item.getItemId()){
+            case R.id.change_language:
+                break;
+            case R.id.change_cn:
+                if (LocaleUtils.needUpdateLocale(this, LocaleUtils.LOCALE_CHINESE)) {
+                    LocaleUtils.updateLocale(this, LocaleUtils.LOCALE_CHINESE);
+                    restartAct();
+                }
+                break;
+            case R.id.change_en:
+                if (LocaleUtils.needUpdateLocale(this, LocaleUtils.LOCALE_ENGLISH)) {
+                    LocaleUtils.updateLocale(this, LocaleUtils.LOCALE_ENGLISH);
+                    restartAct();
+                }
+                break;
+            default:
+        }
+        return true;
+    }
+
+    private void restartAct() {
+        Intent intent = new Intent(this, LoginActivity.class);
+        startActivity(intent);
+        finish();
+        //清除Activity退出和进入的动画
+        overridePendingTransition(0, 0);
     }
 }

@@ -5,16 +5,31 @@ import android.content.Intent;
 import android.media.MediaPlayer;
 import android.os.IBinder;
 import android.util.Log;
+import android.widget.SeekBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.hqproj.Activity.MusicActivity;
 import com.example.hqproj.Activity.MyAdapter;
+import com.example.hqproj.Activity.RecyclerViewActivity;
 import com.example.hqproj.R;
 import com.example.hqproj.beans.Datas;
 
-public class MusicService extends Service {
+import java.text.SimpleDateFormat;
+import java.util.Timer;
+import java.util.TimerTask;
 
-    private  MediaPlayer player;
+import static com.example.hqproj.Activity.MusicActivity.mCurrentTv;
+import static com.example.hqproj.Activity.MusicActivity.mSeekBar;
+import static com.example.hqproj.Activity.MusicActivity.mTotalTv;
+
+public class MusicService extends Service implements SeekBar.OnSeekBarChangeListener, MediaPlayer.OnPreparedListener {
+
+    private MediaPlayer player;
+    private boolean isSeekBarChanging;
+    private int currentPos;
+    private Timer timer;
+    private TextView song;
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -24,12 +39,13 @@ public class MusicService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         String action = intent.getStringExtra("action");
+//        intent.getSerializableExtra("song");
+//        this.song = song;
+
         if ("play".equals(action)) {
             selectMusic();
         } else if ("pause".equals(action)) {
             pauseMusic();
-        } else if ("stop".equals(action)) {
-            stopMusic();
         } else if ("plus".equals(action)) {
             nextMusic();
         } else if ("minus".equals(action)) {
@@ -37,27 +53,38 @@ public class MusicService extends Service {
         } else if ("loop".equals(action)) {
             loopMusic();
         }
+
         return super.onStartCommand(intent, flags, startId);
     }
 
     //播放
     private void playMusic(int resId) {
-        if (player == null) {
-            player = MediaPlayer.create(this, resId);
-            Log.d("sssssssss", "playing......."+MyAdapter.mPosition);
-
-//        }else if(player.isPlaying()){
-//            stopMusic();
-//            Log.d("sssssssss", "重新播放"+MyAdapter.mPosition);
-//            playMusic(resId);
-//        }else{
+        if (player != null) {
+            stopMusic();
         }
+        player = MediaPlayer.create(this, resId);
         player.start();
+//        currentPos = player.getCurrentPosition();
+//        player.setOnPreparedListener(this);
+//        timer = new Timer();
+//        timer.schedule(new TimerTask() {
+//            @Override
+//            public void run() {
+//                if(isSeekBarChanging){
+//                    return;
+//                }
+//                mSeekBar.setProgress(player.getCurrentPosition());
+//            }
+//        },0,50);
+        MusicActivity.mBtn_pause.setImageResource(R.drawable.ic_play);
+        RecyclerViewActivity.mSongButton.setImageResource(R.drawable.ic_play1);
+
+        mSeekBar.setOnSeekBarChangeListener(this);
+
         //播放结束自动播放下一首
         player.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mp) {
-//                player.start();
                 nextMusic();
             }
         });
@@ -65,9 +92,17 @@ public class MusicService extends Service {
 
     //暂停
     private void pauseMusic() {
-        if (player != null && player.isPlaying()) {
-            player.pause();
-            Log.d("sssssssss", "pause......."+MyAdapter.mPosition);
+        if (player != null) {
+            if (player.isPlaying()) {
+                player.pause();
+                Log.d("dddddddddd", "pause--->" + player.toString());
+                MusicActivity.mBtn_pause.setImageResource(R.drawable.ic_pause);
+                RecyclerViewActivity.mSongButton.setImageResource(R.drawable.ic_pause1);
+            } else {
+                player.start();
+                MusicActivity.mBtn_pause.setImageResource(R.drawable.ic_play);
+                RecyclerViewActivity.mSongButton.setImageResource(R.drawable.ic_play1);
+            }
         }
     }
 
@@ -79,18 +114,16 @@ public class MusicService extends Service {
             player.release();
             player = null;
         }
-        Log.d("sssssssss", "stop.......");
     }
 
     //下一首
     private void nextMusic() {
+        MusicActivity.mBtn_loop.setImageResource(R.drawable.ic_loop_list);
         //获取当前播放的是哪个item
         int currentResId = MyAdapter.mPosition + 1;
         if (currentResId >= 0 && currentResId < Datas.song.length) {
-            Log.d("aaaaaaaaaa", "currentId 1 --->" + currentResId);
             stopMusic();
             playMusic(Datas.song[currentResId++]);
-            Log.d("aaaaaaaaaa", "currentId 2 --->" + currentResId);
             currentResId--;
             changeImg(Datas.imgs[currentResId++]);//图片
             currentResId--;
@@ -99,7 +132,6 @@ public class MusicService extends Service {
             changeSongName(Datas.songs[currentResId++]);//歌名
             MyAdapter.mPosition++;
         } else if (currentResId == Datas.song.length) {
-            Log.d("aaaaaaaaaa", "currentId 3 --->" + currentResId);
             MyAdapter.mPosition = 0;
             stopMusic();
             playMusic(Datas.song[0]);
@@ -107,11 +139,11 @@ public class MusicService extends Service {
             changeSinger(Datas.singers[0]);
             changeSongName(Datas.songs[0]);
         }
-        Log.d("sssssssss", "next.......");
     }
 
     //上一首
     private void previousMusic() {
+        MusicActivity.mBtn_loop.setImageResource(R.drawable.ic_loop_list);
         //获取当前播放的是哪个item
         int currentResId = MyAdapter.mPosition;
         if (currentResId > 0) {
@@ -135,12 +167,20 @@ public class MusicService extends Service {
         Log.d("sssssssss", "previous.......");
     }
 
-    //单曲循环
+    //循环
     private void loopMusic() {
-        if(player != null && player.isPlaying()){
-            player.setLooping(true);
-            Toast.makeText(this, "单曲循环", Toast.LENGTH_SHORT).show();
-            MusicActivity.mBtn_loop.setImageResource(R.drawable.ic_loop);
+        MusicActivity.mBtn_loop.setImageResource(R.drawable.ic_loop_list);
+        if (player != null) {
+            //列表循环
+            if (player.isLooping()) {
+                player.setLooping(false);
+                Toast.makeText(this, "列表循环", Toast.LENGTH_SHORT).show();
+            } else {
+                //单曲循环
+                player.setLooping(true);
+                Toast.makeText(this, "单曲循环", Toast.LENGTH_SHORT).show();
+                MusicActivity.mBtn_loop.setImageResource(R.drawable.ic_loop);
+            }
         }
     }
 
@@ -153,103 +193,48 @@ public class MusicService extends Service {
     public void onDestroy() {
         super.onDestroy();
         stopMusic();
+        timer.cancel();
+        timer = null;
     }
 
     //更换图片
     private void changeImg(int resId) {
         MusicActivity.mSinger_image.setImageResource(resId);
+        RecyclerViewActivity.mSingerImg.setImageResource(resId);
     }
 
     //更换歌名
     private void changeSongName(String resId) {
         MusicActivity.mSong.setText(resId);
+        RecyclerViewActivity.mSongTv.setText(resId);
     }
 
     //更换歌手
     private void changeSinger(String resId) {
         MusicActivity.mSinger.setText(resId);
+        RecyclerViewActivity.mSingerTv.setText(resId);
     }
 
     //选择音乐
     private void selectMusic() {
         switch (MyAdapter.mPosition) {
             case 0:
-                changeImg(Datas.imgs[0]);
-                changeSongName(Datas.songs[0]);
-                changeSinger(Datas.singers[0]);
-                playMusic(Datas.song[0]);
-                break;
             case 1:
-                changeImg(Datas.imgs[1]);
-                changeSongName(Datas.songs[1]);
-                changeSinger(Datas.singers[1]);
-                playMusic(Datas.song[1]);
-                break;
             case 2:
-                changeImg(Datas.imgs[2]);
-                changeSongName(Datas.songs[2]);
-                changeSinger(Datas.singers[2]);
-                playMusic(Datas.song[2]);
-                break;
             case 3:
-                changeImg(Datas.imgs[3]);
-                changeSongName(Datas.songs[3]);
-                changeSinger(Datas.singers[3]);
-                playMusic(Datas.song[3]);
-                break;
             case 4:
-                changeImg(Datas.imgs[4]);
-                changeSongName(Datas.songs[4]);
-                changeSinger(Datas.singers[4]);
-                playMusic(Datas.song[4]);
-                break;
             case 5:
-                changeImg(Datas.imgs[5]);
-                changeSongName(Datas.songs[5]);
-                changeSinger(Datas.singers[5]);
-                playMusic(Datas.song[5]);
-                break;
             case 6:
-                changeImg(Datas.imgs[6]);
-                changeSongName(Datas.songs[6]);
-                changeSinger(Datas.singers[6]);
-                playMusic(Datas.song[6]);
-                break;
             case 7:
-                changeImg(Datas.imgs[7]);
-                changeSongName(Datas.songs[7]);
-                changeSinger(Datas.singers[7]);
-                playMusic(Datas.song[7]);
-                break;
             case 8:
-                changeImg(Datas.imgs[8]);
-                changeSongName(Datas.songs[8]);
-                changeSinger(Datas.singers[8]);
-                playMusic(Datas.song[8]);
-                break;
             case 9:
-                changeImg(Datas.imgs[9]);
-                changeSongName(Datas.songs[9]);
-                changeSinger(Datas.singers[9]);
-                playMusic(Datas.song[9]);
-                break;
             case 10:
-                changeImg(Datas.imgs[10]);
-                changeSongName(Datas.songs[10]);
-                changeSinger(Datas.singers[10]);
-                playMusic(Datas.song[10]);
-                break;
             case 11:
-                changeImg(Datas.imgs[11]);
-                changeSongName(Datas.songs[11]);
-                changeSinger(Datas.singers[11]);
-                playMusic(Datas.song[11]);
-                break;
             case 12:
-                changeImg(Datas.imgs[12]);
-                changeSongName(Datas.songs[12]);
-                changeSinger(Datas.singers[12]);
-                playMusic(Datas.song[12]);
+                changeImg(Datas.imgs[MyAdapter.mPosition]);
+                changeSongName(Datas.songs[MyAdapter.mPosition]);
+                changeSinger(Datas.singers[MyAdapter.mPosition]);
+                playMusic(Datas.song[MyAdapter.mPosition]);
                 break;
             default:
                 Toast.makeText(this, "当前无歌曲！", Toast.LENGTH_SHORT).show();
@@ -257,5 +242,29 @@ public class MusicService extends Service {
         }
     }
 
-}
+    @Override
+    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+        SimpleDateFormat sdf=new SimpleDateFormat("mm:ss");
+        String musicTotalTime=sdf.format(player.getDuration());
+        String musicCurrentTime = sdf.format(player.getCurrentPosition());
+        mCurrentTv.setText("" + musicCurrentTime);
+        mTotalTv.setText("" + musicTotalTime);
+    }
 
+    @Override
+    public void onStartTrackingTouch(SeekBar seekBar) {
+        isSeekBarChanging = true;
+    }
+
+    @Override
+    public void onStopTrackingTouch(SeekBar seekBar) {
+        isSeekBarChanging = false;
+        player.seekTo(seekBar.getProgress());
+    }
+
+    @Override
+    public void onPrepared(MediaPlayer mp) {
+        player.seekTo(currentPos);
+        mSeekBar.setMax(player.getDuration());
+    }
+}

@@ -1,0 +1,19 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/change_language"
+        android:title="@string/PageLogin_choose_lan">
+        <menu>
+            <item
+                android:id="@+id/change_cn"
+                android:title="@string/lan_chinese"
+                app:showAsAction="never">
+            </item>
+            <item
+                android:id="@+id/change_en"
+                android:title="@string/lan_en"
+                app:showAsAction="never">
+            </item>
+        </menu>
+    </item>
+</menu>

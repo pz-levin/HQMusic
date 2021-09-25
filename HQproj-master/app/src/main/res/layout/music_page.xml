@@ -100,20 +100,20 @@
             android:weightSum="1">
 
             <TextView
-                android:id="@+id/playingTime"
+                android:id="@+id/currentTv"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="00:00" />
 
             <SeekBar
-                android:id="@+id/seekBar1"
-                android:layout_width="295dp"
+                android:id="@+id/seekBar"
+                android:layout_width="288dp"
                 android:layout_height="wrap_content"
                 android:max="100"
                 android:layout_weight="0.78" />
 
             <TextView
-                android:id="@+id/totalTime"
+                android:id="@+id/totalTv"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="00:00" />
@@ -145,7 +145,7 @@
 
             <ImageButton
                 android:id="@+id/btn_loop"
-                android:layout_width="92dp"
+                android:layout_width="80dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:backgroundTint="@android:color/background_light"
@@ -154,20 +154,20 @@
                 android:text="单曲循环"
                 android:textSize="15sp" />
 
-            <ImageButton
-                android:id="@+id/btn_stop"
-                android:layout_width="92dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:backgroundTint="@android:color/background_light"
-                android:scaleType="fitCenter"
-                android:src="@drawable/ic_stop"
-                android:text="停止"
-                android:textSize="15sp" />
+            <!--            <ImageButton-->
+            <!--                android:id="@+id/btn_stop"-->
+            <!--                android:layout_width="92dp"-->
+            <!--                android:layout_height="match_parent"-->
+            <!--                android:layout_weight="1"-->
+            <!--                android:backgroundTint="@android:color/background_light"-->
+            <!--                android:scaleType="fitCenter"-->
+            <!--                android:src="@drawable/ic_stop"-->
+            <!--                android:text="停止"-->
+            <!--                android:textSize="15sp" />-->
 
             <ImageButton
                 android:id="@+id/btn_minus"
-                android:layout_width="92dp"
+                android:layout_width="80dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:backgroundTint="@android:color/background_light"
@@ -176,31 +176,31 @@
                 android:text="前一"
                 android:textSize="15sp" />
 
+            <!--            <ImageButton-->
+            <!--                android:id="@+id/btn_play"-->
+            <!--                android:layout_width="92dp"-->
+            <!--                android:layout_height="match_parent"-->
+            <!--                android:layout_weight="1"-->
+            <!--                android:backgroundTint="@android:color/background_light"-->
+            <!--                android:scaleType="fitCenter"-->
+            <!--                android:src="@drawable/ic_play"-->
+            <!--                android:text="播放"-->
+            <!--                android:textSize="15sp" />-->
+
             <ImageButton
-                android:id="@+id/btn_play"
-                android:layout_width="92dp"
+                android:id="@+id/btn_pause"
+                android:layout_width="80dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:backgroundTint="@android:color/background_light"
                 android:scaleType="fitCenter"
                 android:src="@drawable/ic_play"
-                android:text="播放"
-                android:textSize="15sp" />
-
-            <ImageButton
-                android:id="@+id/btn_pause"
-                android:layout_width="92dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:backgroundTint="@android:color/background_light"
-                android:scaleType="fitCenter"
-                android:src="@drawable/ic_pause2"
-                android:text="暂停"
+                android:text="pause"
                 android:textSize="15sp" />
 
             <ImageButton
                 android:id="@+id/btn_plus"
-                android:layout_width="92dp"
+                android:layout_width="80dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:backgroundTint="@android:color/background_light"
@@ -255,4 +255,6 @@
     </TableRow>
 
 </TableLayout>
+
+
 
